@@ -84,3 +84,4 @@ class MovieController extends Controller
         return redirect('/movies/data')->with('success', 'Data berhasil dihapus');
     }
 }
+
