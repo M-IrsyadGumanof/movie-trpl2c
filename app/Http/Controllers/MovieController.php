@@ -2,15 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Movie;
-use App\Models\Category;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\StoreMovieRequest;
 use App\Services\MovieService;
+use Illuminate\Http\Request;
+use App\Models\Category;
+use App\Http\Requests\StoreMovieRequest;
 
 class MovieController extends Controller
 {
@@ -22,18 +17,27 @@ class MovieController extends Controller
         $this->movieService = $movieService;
     }
 
-    public function index()
+        public function index()
     {
         $movies = $this->movieService->getAll(request('search'));
         return view('homepage', compact('movies'));
     }
 
+    //  DETAIL
     public function detail($id)
     {
         $movie = $this->movieService->getById($id);
         return view('detail', compact('movie'));
     }
 
+    //  FORM CREATE
+    public function create()
+    {
+        $categories = Category::all();
+        return view('input', compact('categories'));
+    }
+
+    //  STORE
     public function store(StoreMovieRequest $request)
     {
         $this->movieService->store(
@@ -44,6 +48,23 @@ class MovieController extends Controller
         return redirect('/')->with('success', 'Film berhasil ditambahkan.');
     }
 
+    //  DATA MOVIES
+    public function data()
+    {
+        $movies = $this->movieService->getAll();
+        return view('data-movies', compact('movies'));
+    }
+
+    //  FORM EDIT
+    public function form_edit($id)
+    {
+        $movie = $this->movieService->getById($id);
+        $categories = Category::all();
+
+        return view('form-edit', compact('movie', 'categories'));
+    }
+
+    //  UPDATE
     public function update(Request $request, $id)
     {
         $this->movieService->update(
@@ -55,9 +76,11 @@ class MovieController extends Controller
         return redirect('/movies/data')->with('success', 'Data berhasil diperbarui');
     }
 
+    // DELETE
     public function delete($id)
     {
         $this->movieService->delete($id);
+
         return redirect('/movies/data')->with('success', 'Data berhasil dihapus');
     }
 }
